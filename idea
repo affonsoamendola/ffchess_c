@@ -1,0 +1,28 @@
+Foffonso's Chess
+
+Simple chess game.
+Multiple historical and local variations.
+
+Can be played on the terminal, or with a GUI.
+Can choose different algorithms to play against.
+Local Multiplayer
+Internet Multiplayer
+Multiple boards and chess pieces for the GUI version.
+
+Underlying chess framework.
+
+Maybe make it possible for pieces to be in the intersections.
+
+Variations:
+Chaturaji
+Chaturang
+Courier (8x12 board)
+Grant Acedrex (12x12 board)
+Shatranj
+Sittuyin
+Tamerlane (10x10 board)
+Shogi (9x9 board)
+
+
+
+
