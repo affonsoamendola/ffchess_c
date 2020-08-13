@@ -2,22 +2,24 @@
 #include <string.h>
 
 #include "chess.h"
-#include "gfx.h"
-#include "resource_manager.h"
+#include "display.h"
+
+int board_start_x = 0;
+int board_start_y = 0;
+
+int viewport_x = 40;
+int viewport_y = 40;
 
 int board_size_x = 8;
 int board_size_y = 8;
 
-int board_start_x = 0;
-int board_start_y = 0;
+int square_size = 20;
+int get_square_size(){return square_size;}
 
 PIECE* board_pieces;
 
 void init_board()
 {
-	board_start_x = get_current_res().x/2 - get_texture_w(0)/2;
-	board_start_y = get_current_res().y/2 - get_texture_h(0)/2;
-	
 	board_pieces = malloc(board_size_x * board_size_y * sizeof(PIECE));
 	memset(board_pieces, 0, board_size_x * board_size_y * sizeof(PIECE));
 
@@ -61,9 +63,24 @@ Point2 get_board_size()
 	return point2(board_size_x, board_size_y);
 }
 
-void draw_board()
+Point2 get_background_start()
 {
-	blit_hardware(0, rect(0, 0, get_texture_w(0), get_texture_h(0)), point2(board_start_x, board_start_y), point2(1,1));
+	Point2 start;
+
+	start.x = get_current_res().x/2 - viewport_x - get_texture_w(0)/2;
+	start.y = get_current_res().y/2 - viewport_y - get_texture_h(0)/2;
+
+	return start;
+}
+
+Point2 get_board_start()
+{
+	Point2 start;
+
+	start.x = get_current_res().x/2 - viewport_x - (square_size*board_size_x)/2;
+	start.y = get_current_res().y/2 - viewport_y - (square_size*board_size_y)/2;
+
+	return start;
 }
 
 void free_board()

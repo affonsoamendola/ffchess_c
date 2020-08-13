@@ -3,12 +3,8 @@
 
 #include "chess.h"
 #include "board.h"
-#include "gfx.h"
 
 #include "ff_rect.h"
-
-int square_size = 20;
-int get_square_size(){return square_size;}
 
 void set_board_piece(int x, int y, PIECE_TYPE type, TEAM team)
 {
@@ -23,17 +19,4 @@ int is_square_occupied(int x, int y)
 PIECE get_board_piece(int x, int y)
 {
 	return board_pieces[x + y * get_board_size().y];
-}
-
-
-Rect get_square_bounds(int x, int y)
-{
-	Rect rect;
-
-	rect.x = get_current_res().x/2 - (square_size * get_board_size().x)/2 + x * square_size;
-	rect.y = get_current_res().x/2 - (square_size * get_board_size().x)/2 + x * square_size;
-	rect.w = square_size;
-	rect.h = square_size;
-
-	return rect;
 }

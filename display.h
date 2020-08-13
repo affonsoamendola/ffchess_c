@@ -1,5 +1,5 @@
-#ifndef GFX_H
-#define GFX_H
+#ifndef DISPLAY_H
+#define DISPLAY_H
 
 #include "ff_stb.h"
 #include "ff_point2.h"
@@ -8,11 +8,12 @@
 #include "ff_color.h"
 #include "SDL2/SDL.h"
 
-void init_gfx();
+#include "resource_manager.h"
+
+void init_display();
 void render_clear();
 void render_present();
-void quit_gfx();
-
+void quit_display();
 
 Color get_pixel(const int x, const int y);
 void set_pixel(	const int x, const int y, 
@@ -38,6 +39,7 @@ void draw_string_f(	const Point2 position, uint32_t font_id, Color color,
 					char* format_string, ...);
 
 Point2 get_current_res();
+int get_pixel_scale();
 
 static inline float get_aspect_ratio() 
 {

@@ -7,13 +7,14 @@
 #include "ff_point2.h"
 #include "ff_color.h"
 
-#include "gfx.h"
+#include "display.h"
 
 uint32_t screen_res_x = 320;
 uint32_t screen_res_y = 240;
 
 float aspect_ratio = 0.0f;
 int pixel_scale = 3;
+int get_pixel_scale(){return pixel_scale;}
 
 char* window_title = "Foffonso's Chess";
 
@@ -24,7 +25,7 @@ Color* screen_pixels = NULL;
 SDL_Renderer* renderer = NULL;
 
 //Initializes graphics subsystem
-void init_gfx()
+void init_display()
 {	
 	aspect_ratio = screen_res_x / (float)screen_res_y;
 	
@@ -82,10 +83,14 @@ void init_gfx()
 	//Sets texture to have nearest neighbor scaling
 	//Which is the same as integer scaling when dealing with integer scaling factors.
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+
+	SDL_ShowCursor(0);
+	init_resource_manager();
 }
 
-void quit_gfx()
+void quit_display()
 {
+	quit_resource_manager();
 	free(screen_pixels);
 	SDL_DestroyTexture(screen_surface);
 	SDL_DestroyRenderer(renderer);

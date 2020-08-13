@@ -27,11 +27,8 @@ typedef struct PIECE_
 	PIECE_TYPE type;
 } PIECE;
 
-Point2 get_board_size();
 PIECE get_board_piece(int x, int y);
 
 void set_board_piece(int x, int y, PIECE_TYPE type, TEAM team);
-
-int get_square_size();
 
 #endif

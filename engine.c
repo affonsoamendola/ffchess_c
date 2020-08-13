@@ -4,14 +4,14 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 
-#include "gfx.h"
+#include "display.h"
 #include "time.h"
 #include "input.h"
-#include "resource_manager.h"
 
 #include "engine.h"
 
 #include "game.h"
+#include "graphics.h"
 
 #include "ff_linked_list.h"
 
@@ -48,16 +48,17 @@ void engine_init()
 		exit(-1);
 	}
 
-	init_gfx();
-	init_resource_manager();
+	init_display();
+	init_graphics();
 	init_game();
 }
 
 void engine_quit()
 {
+
 	quit_game();
-	quit_gfx();
-	quit_resource_manager();
+	quit_graphics();
+	quit_display();
 	SDL_Quit();
 	exit(0);
 }
@@ -71,10 +72,14 @@ void engine_loop()
 {
 	const Uint64 frame_start = SDL_GetPerformanceCounter();
 
+	
 	render_clear();	
 	input_update();
+
 	draw_game();
+
 	render_present();
+	
 
 	//Stops the timer.
     const Uint64 frame_end = SDL_GetPerformanceCounter();

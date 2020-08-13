@@ -9,13 +9,15 @@ SDL_Event input_event;
 char key_down[284];
 char key_up[284];
 
-int mouse_x;
-int mouse_y;
+int mouse_x_raw = 0;
+int mouse_y_raw = 0;
 
 void input_update()
 {
 	memset(key_down, 0, 284);
 	memset(key_up, 0, 284);
+
+	SDL_GetMouseState(&mouse_x_raw, &mouse_y_raw);
 
 	while(SDL_PollEvent(&input_event))
 	{

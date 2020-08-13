@@ -3,4 +3,6 @@
 
 void input_update();
 
+extern int mouse_x;
+
 #endif
