@@ -1,8 +1,10 @@
 #include <stdlib.h>
 
+#include "stdio.h"
 #include "SDL2/SDL.h"
 
 #include "engine.h"
+#include "cursor.h"
 
 SDL_Event input_event;
 
@@ -25,9 +27,20 @@ void input_update()
 		{
 			if(input_event.key.repeat == 0) key_down[input_event.key.keysym.scancode] = true;
 
-			switch(input_event.key.keysym.scancode)
+			switch(input_event.key.keysym.sym)
 			{
-
+				case SDLK_w:
+					move_cursor(0, -1);
+					break;
+				case SDLK_s:
+					move_cursor(0, 1);
+					break;
+				case SDLK_d:
+					move_cursor(1, 0);
+					break;
+				case SDLK_a:
+					move_cursor(-1, 0);
+					break;
 			}
 		}
 

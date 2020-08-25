@@ -1,19 +1,25 @@
 #include "chess.h"
 #include "board.h"
 
-int selected_square_x = 0;
-int selected_square_y = 0;
 
-typedef struct OVER_SQUARE_RETURN_
+#include "stdio.h"
+#include "ff_point2.h"
+
+Point2 cursor_pos = {0, 0};
+
+int show_cursor = 1;
+
+void move_cursor_to(Point2 location)
 {
-	PIECE_TYPE piece;
-	TEAM team;
-	int square_x;
-	int square_y;
+	if(	location.x >= 0 && location.x < get_board_size().x &&
+		location.y >= 0 && location.y < get_board_size().y)
+	{
+		cursor_pos = location;
+	}
+}
 
-} OVER_SQUARE_RETURN;
-
-OVER_SQUARE_RETURN is_over_square(int x, int y)
+void move_cursor(int d_x, int d_y)
 {
-
+	move_cursor_to(sum_p2(cursor_pos, point2(d_x, d_y)));	
+	printf("%d %d\n", cursor_pos.x, cursor_pos.y);
 }
