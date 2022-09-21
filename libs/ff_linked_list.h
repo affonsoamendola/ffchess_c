@@ -162,7 +162,7 @@ static inline void* ff_get_last_list(ff_List* list)
 	return list->last_element->content;
 }
 
-static inline void* ff_get_fist_list(ff_List* list)
+static inline void* ff_get_first_list(ff_List* list)
 {
 	return list->first_element->content;
 }

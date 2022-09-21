@@ -21,11 +21,13 @@ int get_square_size(){return square_size;}
 
 ff_List game_pieces;
 ff_List dead_pieces;
+ff_List valid_moves_sprites;
 
 void init_board()
 {
 	ff_initialize_list(&game_pieces);
 	ff_initialize_list(&dead_pieces);
+	ff_initialize_list(&valid_moves_sprites);
 
 	create_board_piece(0, 0, TOWER, BLACK);
 	create_board_piece(1, 0, KNIGHT, BLACK);
@@ -35,14 +37,14 @@ void init_board()
 	create_board_piece(5, 0, BISHOP, BLACK);
 	create_board_piece(6, 0, KNIGHT, BLACK);
 	create_board_piece(7, 0, TOWER, BLACK);
-	create_board_piece(0, 1, PAWN, BLACK);
-	create_board_piece(1, 1, PAWN, BLACK);
-	create_board_piece(2, 1, PAWN, BLACK);
-	create_board_piece(3, 1, PAWN, BLACK);
-	create_board_piece(4, 1, PAWN, BLACK);
-	create_board_piece(5, 1, PAWN, BLACK);
-	create_board_piece(6, 1, PAWN, BLACK);
-	create_board_piece(7, 1, PAWN, BLACK);
+	//create_board_piece(0, 1, PAWN, BLACK);
+	//create_board_piece(1, 1, PAWN, BLACK);
+	//create_board_piece(2, 1, PAWN, BLACK);
+	//create_board_piece(3, 1, PAWN, BLACK);
+	//create_board_piece(4, 1, PAWN, BLACK);
+	//create_board_piece(5, 1, PAWN, BLACK);
+	//create_board_piece(6, 1, PAWN, BLACK);
+	//create_board_piece(7, 1, PAWN, BLACK);
 
 	create_board_piece(0, 7, TOWER, WHITE);
 	create_board_piece(1, 7, KNIGHT, WHITE);
@@ -60,17 +62,28 @@ void init_board()
 	create_board_piece(5, 6, PAWN, WHITE);
 	create_board_piece(6, 6, PAWN, WHITE);
 	create_board_piece(7, 6, PAWN, WHITE);
+
+
+	for(int i = 0; i < game_pieces.size; i++)
+	{
+		Piece* piece = ff_get_first_list(&game_pieces);
+		
+		update_valid_moves(piece);
+
+		ff_move_carrousel(&game_pieces, 1);
+	}
 }
 
 void destroy_board()
 {
 	ff_destroy_list(&game_pieces);
 	ff_destroy_list(&dead_pieces);
+	ff_destroy_list(&valid_moves_sprites);
 }
 
 Point2 get_square_pixel_pos(Point2 board_coord)
 {
-	return sum_p2(	get_board_start(), 
+	return sum_p2(	get_board_start_local_coords(), 
 					scale_i_p2(board_coord, get_square_size()));
 }
 
@@ -87,6 +100,16 @@ int is_inside_board(Point2 pos)
 		return true;
 	}	
 	return false;
+}
+
+Point2 get_board_start_local_coords()
+{
+	Point2 start;
+
+	start.x = get_current_res().x/2 - (square_size*board_size_x)/2;
+	start.y = get_current_res().y/2 - (square_size*board_size_y)/2;
+
+	return start;
 }
 
 Point2 get_background_start()
@@ -141,7 +164,7 @@ Piece* get_piece_at(Point2 board_coord)
 
 	for(int i = 0; i < game_pieces.size; i++)
 	{
-		Piece* piece = ff_get_fist_list(&game_pieces);
+		Piece* piece = ff_get_first_list(&game_pieces);
 		
 		if(	equals_p2(board_coord, piece->pos))
 		{
@@ -163,7 +186,7 @@ Piece* get_piece_at(Point2 board_coord)
 	return found_piece;
 }
 
-void create_board_piece(int x, int y, PIECE_TYPE type, TEAM team)
+Piece* create_board_piece(int x, int y, PIECE_TYPE type, TEAM team)
 {
 	Piece new_piece;
 
@@ -184,14 +207,26 @@ void create_board_piece(int x, int y, PIECE_TYPE type, TEAM team)
 									1);
 
 	new_piece.sprite = sprite;
-/*
+
 	ff_initialize_list(&(new_piece.valid_moves));
 
 	//TODO
 	//This might not work properly, test it out
-	get_valid_moves(&new_piece, &(new_piece.valid_moves));
-*/
+		
+
 	ff_pushback_list(&game_pieces, &new_piece);
+
+	return(ff_get_last_list(&game_pieces));
+}
+
+void move_piece(Piece* piece, Point2 new_board_coords)
+{
+	piece->pos = new_board_coords;
+
+	Point2 sprite_pos = get_square_pixel_pos(new_board_coords);
+
+	piece->sprite->pos_x = sprite_pos.x;
+	piece->sprite->pos_y = sprite_pos.y;
 }
 
 void destroy_board_piece(Piece* piece)
@@ -204,17 +239,46 @@ void destroy_board_piece(Piece* piece)
 
 	ff_remove_at_list(&game_pieces, index);
 
-//	ff_destroy_list(&(piece->valid_moves));
+	ff_destroy_list(&(piece->valid_moves));
 }
 
-void show_valid_moves()
+void show_valid_moves(Piece* piece)
 {
+	for(int i = 0; i < piece->valid_moves.size; i++)
+	{
+		Point2 board_pos = *(Point2*)ff_get_first_list(&(piece->valid_moves));
+		Point2 pixel_pos = get_square_pixel_pos(board_pos);
 
+		Sprite* new_sprite = create_sprite(	3, 
+											rect(0, 0, 20, 20), 
+											pixel_pos.x, 
+											pixel_pos.y, 
+											1);
+
+		ff_pushback_list(&valid_moves_sprites, new_sprite);
+
+		ff_move_carrousel(&(piece->valid_moves), 1);
+	}
 }
 
 void hide_valid_moves()
 {
+	while(valid_moves_sprites.size > 0)
+	{
+		Sprite* sprite = ff_get_first_list(&valid_moves_sprites);
 
+		destroy_sprite(sprite);
+
+		ff_remove_at_list(	&valid_moves_sprites,
+							0);
+
+	}
+}
+
+void update_valid_moves(Piece* piece)
+{
+	ff_destroy_list(&(piece->valid_moves));
+	get_valid_moves(piece, &(piece->valid_moves));
 }
 
 void get_valid_moves(Piece* piece_, ff_List* out_initted_list)
@@ -305,154 +369,65 @@ void get_valid_moves(Piece* piece_, ff_List* out_initted_list)
 		}
 	}
 
+	
 	Point2 cardinal_directions[4] = {{0, 1}, {0, -1}, { 1, 0}, {-1, 0}}; 
 	Point2 diagonal_directions[4] = {{1, 1}, {1, -1}, {-1, 1}, {-1,-1}};
 
-	if(piece.type == TOWER || piece.type == BISHOP)
+	
+	if(piece.type == TOWER || piece.type == BISHOP || piece.type == QUEEN)
 	{
-		for(int rotation = 0; rotation < 4; rotation ++)
+		//This types of movement thing allows me to reuse tower and bishop code
+		//for the Queen, since her movements are basically the both of them combined
+
+
+		//If this is not a queen, then the outermost for only runs once, and the
+		//type of movement is determined at the first if after the rotation for-loop
+		//
+		//Else, there are two types of movement, cardinal and diagonal, determined by
+		//the "or" (||) of that same if;
+
+		int types_of_movement = 1;
+
+		if(piece.type == QUEEN)
 		{
-			Point2 direction;
-		
-			if(piece.type == TOWER)	
-			{
-				direction = cardinal_directions[rotation];
-			}
-			else if(piece.type == BISHOP)
-			{
-				direction = diagonal_directions[rotation];
-			}
-
-			int clear_path = true;
-			int length = 1;
-
-			while(clear_path == true)
-			{
-				valid_spot = sum_p2(piece.pos, scale_i_p2(direction, length));
-				
-				Piece* piece_at_spot = NULL;
- 				piece_at_spot = get_piece_at(valid_spot);
-
- 				if(piece_at_spot != NULL)
- 				{
- 					clear_path == false;
- 					if(piece.team == WHITE)
-	 				{
-	 					if(piece_at_spot->team == BLACK)
-	 					{
-	 						ff_pushback_list(out_initted_list, &valid_spot);
-	 					}
-	 				}
-	 				else if(piece.team == BLACK)
-	 				{
-	 					if(piece_at_spot->team == WHITE)
-	 					{
-	 						ff_pushback_list(out_initted_list, &valid_spot);
-	 					}
-	 				}
- 				}
- 				else
- 				{
-	 				ff_pushback_list(out_initted_list, &valid_spot);		
- 				}
-
-				length ++;
-			}	
-		}
-	}
-/*
-		for(int y = 0; y < board_size_y; y ++)
-		{
-			if(piece.pos.y == y) continue;
-
-			valid_spot = point2(piece.pos.x, y);
- 
- 			Piece* piece_at_spot = NULL;
- 			piece_at_spot = get_piece_at(valid_spot);
-			
- 			if(piece_at_spot == NULL) ff_pushback_list(out_initted_list, &valid_spot);
- 			else
- 			{
- 				if(piece.team == WHITE)
-				{
-					if(	piece_at_spot->team == BLACK)
-					{
-						ff_pushback_list(out_initted_list, &valid_spot);
-					}
-				}
-
-				if(piece.team == BLACK)
-				{
-					if(	piece_at_spot->team == WHITE)
-					{
-						ff_pushback_list(out_initted_list, &valid_spot);
-					}
-				}
- 			}
+			types_of_movement = 2;
 		}
 
-		for(int x = 0; x < board_size_x; x ++)
+		for(int type_of_movement = 0; type_of_movement < types_of_movement; type_of_movement ++)
 		{
-			if(piece.pos.x == x) continue;
 
-			valid_spot = point2(piece.pos.x, x);
- 
- 			Piece* piece_at_spot = NULL;
- 			piece_at_spot = get_piece_at(valid_spot);
-			
- 			if(piece_at_spot == NULL) ff_pushback_list(out_initted_list, &valid_spot);
- 			else
- 			{
- 				if(piece.team == WHITE)
-				{
-					if(	piece_at_spot->team == BLACK)
-					{
-						ff_pushback_list(out_initted_list, &valid_spot);
-					}
-				}
-
-				if(piece.team == BLACK)
-				{
-					if(	piece_at_spot->team == WHITE)
-					{
-						ff_pushback_list(out_initted_list, &valid_spot);
-					}
-				}
- 			}
-		}
-*/
-	if(piece.type == QUEEN)
-	{
-		//Type of movement 0 = straight lines (Towerlike)
-		//Type of movement 1 = diagonals (bishoplike)
-		for(int type_of_movement = 0; type_of_movement < 2; type_of_movement ++)
-		{
 			for(int rotation = 0; rotation < 4; rotation ++)
 			{
 				Point2 direction;
 			
-				if(type_of_movement == 0)	
+				if(piece.type == TOWER || (piece.type == QUEEN && type_of_movement == 0))	
 				{
 					direction = cardinal_directions[rotation];
 				}
-				else if(type_of_movement == 1)
+				else if(piece.type == BISHOP || (piece.type == QUEEN && type_of_movement == 1))
 				{
 					direction = diagonal_directions[rotation];
 				}
 
 				int clear_path = true;
 				int length = 1;
-
+				
 				while(clear_path == true)
 				{
+
 					valid_spot = sum_p2(piece.pos, scale_i_p2(direction, length));
 					
+					if(!is_inside_board(valid_spot))
+					{
+						break;
+					}
+
 					Piece* piece_at_spot = NULL;
 	 				piece_at_spot = get_piece_at(valid_spot);
-
+	 				
 	 				if(piece_at_spot != NULL)
 	 				{
-	 					clear_path == false;
+	 					clear_path = false;
 	 					if(piece.team == WHITE)
 		 				{
 		 					if(piece_at_spot->team == BLACK)
@@ -472,9 +447,9 @@ void get_valid_moves(Piece* piece_, ff_List* out_initted_list)
 	 				{
 		 				ff_pushback_list(out_initted_list, &valid_spot);		
 	 				}
-
+						
 					length ++;
-				}	
+				}
 			}
 		}
 	}
@@ -486,6 +461,12 @@ void get_valid_moves(Piece* piece_, ff_List* out_initted_list)
 		for(int i = 0; i < 8; i++)
 		{
 			valid_spot = sum_p2(piece.pos, knight_positions[i]);
+
+			if(!is_inside_board(valid_spot))
+			{
+				continue;
+			}
+
 
 			Piece* piece_at_spot = NULL;
  			piece_at_spot = get_piece_at(valid_spot);
