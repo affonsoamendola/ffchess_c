@@ -1,6 +1,8 @@
 #include "engine.h"
 #include "board.h"
 
+#include "graphics.h"
+
 #include "cursor.h"
 
 #include "input.h"

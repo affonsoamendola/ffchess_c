@@ -5,7 +5,7 @@
 #include "ff_stb.h"
 
 #define VER_MAJOR 0
-#define VER_MINOR 1
+#define VER_MINOR 2
 
 #define MODE_EDITOR 2
 #define MODE_GAME 1

@@ -184,13 +184,13 @@ void create_board_piece(int x, int y, PIECE_TYPE type, TEAM team)
 									1);
 
 	new_piece.sprite = sprite;
-
+/*
 	ff_initialize_list(&(new_piece.valid_moves));
 
 	//TODO
 	//This might not work properly, test it out
-	get_valid_moves(&new_piece, &(new_piece.valid_moves))
-
+	get_valid_moves(&new_piece, &(new_piece.valid_moves));
+*/
 	ff_pushback_list(&game_pieces, &new_piece);
 }
 
@@ -204,8 +204,7 @@ void destroy_board_piece(Piece* piece)
 
 	ff_remove_at_list(&game_pieces, index);
 
-	ff_clear_list(&(piece->valid_moves));
-	ff_destroy_list(&(piece->valid_moves));
+//	ff_destroy_list(&(piece->valid_moves));
 }
 
 void show_valid_moves()
@@ -218,7 +217,7 @@ void hide_valid_moves()
 
 }
 
-void get_valid_moves(Piece* piece_, ff_List out_initted_list)
+void get_valid_moves(Piece* piece_, ff_List* out_initted_list)
 {	
 	Piece piece = *piece_;
 	Point2 valid_spot;
@@ -236,7 +235,7 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 		}
 
 		if(	is_inside_board(valid_spot) &&
-			get_piece_at(valid_spot) == NULL) ff_pushback_list(&out_initted_list, &valid_spot);
+			get_piece_at(valid_spot) == NULL) ff_pushback_list(out_initted_list, &valid_spot);
 
 		//If havent moved yet, pawns move 2 pieces
 		if(piece.pos.y == 6 && piece.team == WHITE)
@@ -244,7 +243,7 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 			valid_spot = sum_p2(piece.pos, point2(0, -2));
 
 			if(	is_inside_board(valid_spot) &&
-				get_piece_at(valid_spot) == NULL)  ff_pushback_list(&out_initted_list, &valid_spot);
+				get_piece_at(valid_spot) == NULL)  ff_pushback_list(out_initted_list, &valid_spot);
 		}
 		
 		if(piece.pos.y == 1 && piece.team == BLACK)
@@ -252,7 +251,7 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 			valid_spot = sum_p2(piece.pos, point2(0, 2));
 
 			if(	is_inside_board(valid_spot) &&
-				get_piece_at(valid_spot) == NULL) ff_pushback_list(&out_initted_list, &valid_spot);
+				get_piece_at(valid_spot) == NULL) ff_pushback_list(out_initted_list, &valid_spot);
 		}
 
 		Piece* left = NULL;
@@ -268,7 +267,7 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 				if(left->team == BLACK)
 				{
 					valid_spot = sum_p2(piece.pos, point2(-1, -1));
-					if(is_inside_board(valid_spot)) ff_pushback_list(&out_initted_list, &valid_spot);
+					if(is_inside_board(valid_spot)) ff_pushback_list(out_initted_list, &valid_spot);
 				}
 			}
 
@@ -277,7 +276,7 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 				if(right->team == BLACK)
 				{
 					valid_spot = sum_p2(piece.pos, point2( 1, -1));
-					if(is_inside_board(valid_spot)) ff_pushback_list(&out_initted_list, &valid_spot);
+					if(is_inside_board(valid_spot)) ff_pushback_list(out_initted_list, &valid_spot);
 				}
 			}
 		}
@@ -291,7 +290,7 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 				if(left->team == WHITE)
 				{
 					valid_spot = sum_p2(piece.pos, point2(-1, 1));
-					if(is_inside_board(valid_spot)) ff_pushback_list(&out_initted_list, &valid_spot);
+					if(is_inside_board(valid_spot)) ff_pushback_list(out_initted_list, &valid_spot);
 				}
 			}
 
@@ -300,7 +299,7 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 				if(right->team == WHITE)
 				{
 					valid_spot = sum_p2(piece.pos, point2( 1, 1));
-					if(is_inside_board(valid_spot)) ff_pushback_list(&out_initted_list, &valid_spot);
+					if(is_inside_board(valid_spot)) ff_pushback_list(out_initted_list, &valid_spot);
 				}
 			}
 		}
@@ -341,20 +340,20 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 	 				{
 	 					if(piece_at_spot->team == BLACK)
 	 					{
-	 						ff_pushback_list(&out_initted_list, &valid_spot);
+	 						ff_pushback_list(out_initted_list, &valid_spot);
 	 					}
 	 				}
 	 				else if(piece.team == BLACK)
 	 				{
 	 					if(piece_at_spot->team == WHITE)
 	 					{
-	 						ff_pushback_list(&out_initted_list, &valid_spot);
+	 						ff_pushback_list(out_initted_list, &valid_spot);
 	 					}
 	 				}
  				}
  				else
  				{
-	 				ff_pushback_list(&out_initted_list, &valid_spot);		
+	 				ff_pushback_list(out_initted_list, &valid_spot);		
  				}
 
 				length ++;
@@ -371,14 +370,14 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
  			Piece* piece_at_spot = NULL;
  			piece_at_spot = get_piece_at(valid_spot);
 			
- 			if(piece_at_spot == NULL) ff_pushback_list(&out_initted_list, &valid_spot);
+ 			if(piece_at_spot == NULL) ff_pushback_list(out_initted_list, &valid_spot);
  			else
  			{
  				if(piece.team == WHITE)
 				{
 					if(	piece_at_spot->team == BLACK)
 					{
-						ff_pushback_list(&out_initted_list, &valid_spot);
+						ff_pushback_list(out_initted_list, &valid_spot);
 					}
 				}
 
@@ -386,7 +385,7 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 				{
 					if(	piece_at_spot->team == WHITE)
 					{
-						ff_pushback_list(&out_initted_list, &valid_spot);
+						ff_pushback_list(out_initted_list, &valid_spot);
 					}
 				}
  			}
@@ -401,14 +400,14 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
  			Piece* piece_at_spot = NULL;
  			piece_at_spot = get_piece_at(valid_spot);
 			
- 			if(piece_at_spot == NULL) ff_pushback_list(&out_initted_list, &valid_spot);
+ 			if(piece_at_spot == NULL) ff_pushback_list(out_initted_list, &valid_spot);
  			else
  			{
  				if(piece.team == WHITE)
 				{
 					if(	piece_at_spot->team == BLACK)
 					{
-						ff_pushback_list(&out_initted_list, &valid_spot);
+						ff_pushback_list(out_initted_list, &valid_spot);
 					}
 				}
 
@@ -416,7 +415,7 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 				{
 					if(	piece_at_spot->team == WHITE)
 					{
-						ff_pushback_list(&out_initted_list, &valid_spot);
+						ff_pushback_list(out_initted_list, &valid_spot);
 					}
 				}
  			}
@@ -458,20 +457,20 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 		 				{
 		 					if(piece_at_spot->team == BLACK)
 		 					{
-		 						ff_pushback_list(&out_initted_list, &valid_spot);
+		 						ff_pushback_list(out_initted_list, &valid_spot);
 		 					}
 		 				}
 		 				else if(piece.team == BLACK)
 		 				{
 		 					if(piece_at_spot->team == WHITE)
 		 					{
-		 						ff_pushback_list(&out_initted_list, &valid_spot);
+		 						ff_pushback_list(out_initted_list, &valid_spot);
 		 					}
 		 				}
 	 				}
 	 				else
 	 				{
-		 				ff_pushback_list(&out_initted_list, &valid_spot);		
+		 				ff_pushback_list(out_initted_list, &valid_spot);		
 	 				}
 
 					length ++;
@@ -493,7 +492,7 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
 
  			if(piece_at_spot == NULL)
  			{
- 				ff_pushback_list(&out_initted_list, &valid_spot);
+ 				ff_pushback_list(out_initted_list, &valid_spot);
  			}
  			else
  			{
@@ -501,14 +500,14 @@ void get_valid_moves(Piece* piece_, ff_List out_initted_list)
  				{
  					if(piece_at_spot->team == BLACK)
  					{
- 						ff_pushback_list(&out_initted_list, &valid_spot);
+ 						ff_pushback_list(out_initted_list, &valid_spot);
  					}
  				}
  				else if(piece.team == BLACK)
  				{
  					if(piece_at_spot->team == WHITE)
  					{
- 						ff_pushback_list(&out_initted_list, &valid_spot);
+ 						ff_pushback_list(out_initted_list, &valid_spot);
  					}
  				}
  			}

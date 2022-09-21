@@ -29,7 +29,7 @@ typedef struct Piece_
 	TEAM team;
 	PIECE_TYPE type;
 
-	ff_List valid_moves
+	ff_List valid_moves;
 
 	Point2 pos;
 } Piece;

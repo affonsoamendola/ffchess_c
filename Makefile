@@ -5,7 +5,7 @@ BINARY := ffchess
 SOURCES := $(wildcard *.c)
 OBJECTS := $(patsubst %.c,%.o,$(SOURCES))
 DEPENDS := $(patsubst %.c,%.d,$(SOURCES))
-CCFLAGS := -I/usr/include/SDL2 -D_REENTRANT -I../../hd/vault/ff-stb/C -g
+CCFLAGS := -I/usr/include/SDL2 -D_REENTRANT -Ilibs -g
 LDFLAGS := -lSDL2_image -pthread -lSDL2 -lc -lm
 # ADD MORE WARNINGS!
 WARNING := 
