@@ -2,7 +2,9 @@
 #define GAME_H
 
 void init_game();
-void draw_game();
+
+void game_loop();
+
 void quit_game();
 
 #endif

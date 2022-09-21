@@ -48,6 +48,7 @@ void engine_init()
 		exit(-1);
 	}
 
+	init_input();
 	init_display();
 	init_graphics();
 	init_game();
@@ -55,7 +56,7 @@ void engine_init()
 
 void engine_quit()
 {
-
+	
 	quit_game();
 	quit_graphics();
 	quit_display();
@@ -71,7 +72,6 @@ void signal_quit()
 void engine_loop()
 {
 	const Uint64 frame_start = SDL_GetPerformanceCounter();
-
 	
 	render_clear();	
 	input_update();
@@ -80,6 +80,7 @@ void engine_loop()
 
 	render_present();
 	
+	game_loop();
 
 	//Stops the timer.
     const Uint64 frame_end = SDL_GetPerformanceCounter();

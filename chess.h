@@ -3,6 +3,8 @@
 
 #include "ff_point2.h"
 
+#include "sprite.h"
+
 typedef enum TEAM_
 {
 	WHITE = 0,
@@ -11,7 +13,6 @@ typedef enum TEAM_
 
 typedef enum PIECE_TYPE_
 {
-	NO_PIECE = 0,
 	PAWN = 1,
 	TOWER = 2,
 	KNIGHT = 3,
@@ -21,14 +22,16 @@ typedef enum PIECE_TYPE_
 
 } PIECE_TYPE;
 
-typedef struct PIECE_
+typedef struct Piece_
 {
+	Sprite* sprite;
+
 	TEAM team;
 	PIECE_TYPE type;
-} PIECE;
 
-PIECE get_board_piece(int x, int y);
+	ff_List valid_moves
 
-void set_board_piece(int x, int y, PIECE_TYPE type, TEAM team);
+	Point2 pos;
+} Piece;
 
 #endif

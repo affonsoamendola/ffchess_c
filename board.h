@@ -5,7 +5,7 @@
 #include "ff_point2.h"
 
 void init_board();
-void free_board();
+void destroy_board();
 
 int get_square_size();
 Point2 get_board_size();
@@ -13,6 +13,7 @@ Point2 get_board_size();
 Point2 get_background_start();
 Point2 get_board_start();
 
-extern PIECE* board_pieces;
+Point2 get_square_at(Point2 pixel_coordinates);
 
+void create_board_piece(int x, int y, PIECE_TYPE type, TEAM team);
 #endif
